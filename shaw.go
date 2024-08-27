@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"unicode"
 
 	"deedles.dev/shaw/dict"
 	"deedles.dev/xiter"
@@ -45,12 +44,10 @@ func main() {
 		words := xiter.ChunksFunc(xiter.Runes(s.Bytes()), isTranslatable)
 		for word := range words {
 			s := string(word)
-			if unicode.IsSpace(word[0]) {
-				fmt.Print(s)
-				continue
+			if isTranslatable(word[0]) {
+				s = dict.Translate(s)
 			}
-
-			fmt.Print(dict.Translate(s))
+			fmt.Print(s)
 		}
 		fmt.Println()
 	}
