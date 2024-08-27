@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-var short = [...][2]string{{"has", "𐑕"}, {"have", "𐑓"}, {"used", "𐑕𐑑"}, {"unused", "𐑕𐑑"}, {"supposed", "𐑕𐑑"}}
-
 type Dict struct {
 	prefixes map[string]string
 	suffixes map[string]string

@@ -1,4 +1,4 @@
 shaw
 ====
 
-shaw implements a Latin-to-Shavian translator in pure Go. The initial implementation was auto-translated from C using [ccgo](https://modernc.org/ccgo). C version by [Dave Coffin](https://www.dechifro.org/shavian/).
+shaw implements a Latin-to-Shavian translator in pure Go. It is entirely written from scratch and is compatible with the dictionary files used by the translators written by [Dave Coffin](https://www.dechifro.org/shavian/).
