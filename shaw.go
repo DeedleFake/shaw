@@ -3,82 +3,12 @@
 package main
 
 import (
-	"reflect"
 	"unsafe"
 
 	"modernc.org/libc"
 )
 
-var (
-	_ reflect.Type
-	_ unsafe.Pointer
-)
-
-const APOS = "'"
-const ARG_MAX = 131072
-const BC_BASE_MAX = 99
-const BC_DIM_MAX = 2048
-const BC_SCALE_MAX = 99
-const BC_STRING_MAX = 1000
-const BUFSIZ = 1024
-const CHARCLASS_NAME_MAX = 14
-const CHAR_BIT = 8
-const CHAR_MAX = 255
-const CHAR_MIN = 0
-const COLL_WEIGHTS_MAX = 2
-const DELAYTIMER_MAX = 0x7fffffff
-const EXIT_FAILURE = 1
-const EXIT_SUCCESS = 0
-const EXPR_NEST_MAX = 32
-const FILENAME_MAX = 4096
-const FILESIZEBITS = 64
-const FOPEN_MAX = 1000
-const HOST_NAME_MAX = 255
 const INT_MAX = 2147483647
-const IOV_MAX = 1024
-const LINE_MAX = 4096
-const LLONG_MAX = 0x7fffffffffffffff
-const LOGIN_NAME_MAX = 256
-const LONG_BIT = 64
-const LONG_MAX = "__LONG_MAX"
-const L_ctermid = 20
-const L_cuserid = 20
-const L_tmpnam = 20
-const MB_LEN_MAX = 4
-const MQ_PRIO_MAX = 32768
-const NAME_MAX = 255
-const NGROUPS_MAX = 32
-const NL_ARGMAX = 9
-const NL_LANGMAX = 32
-const NL_MSGMAX = 32767
-const NL_NMAX = 16
-const NL_SETMAX = 255
-const NL_TEXTMAX = 2048
-const NZERO = 20
-const PAGESIZE = 4096
-const PAGE_SIZE = "PAGESIZE"
-const PATH_MAX = 4096
-const PIPE_BUF = 4096
-const PTHREAD_DESTRUCTOR_ITERATIONS = 4
-const PTHREAD_KEYS_MAX = 128
-const PTHREAD_STACK_MIN = 2048
-const P_tmpdir = "/tmp"
-const RAND_MAX = 0x7fffffff
-const RE_DUP_MAX = 255
-const SCHAR_MAX = 127
-const SEM_NSEMS_MAX = 256
-const SEM_VALUE_MAX = 0x7fffffff
-const SHRT_MAX = 0x7fff
-const SSIZE_MAX = "LONG_MAX"
-const SYMLOOP_MAX = 40
-const TMP_MAX = 10000
-const TTY_NAME_MAX = 32
-const TZNAME_MAX = 6
-const UCHAR_MAX = 255
-const UINT_MAX = 0xffffffff
-const USHRT_MAX = 0xffff
-const WNOHANG = 1
-const WORD_BIT = 32
 
 func load_custom(tls *libc.TLS, file uintptr) {
 	bp := tls.Alloc(32)
@@ -855,14 +785,6 @@ var dend uintptr
 
 var dict = uintptr(unsafe.Pointer(&prefix))
 
-/* Support signed or unsigned plain-char */
-
-/* Implementation choices... */
-
-/* Arbitrary numbers... */
-
-/* POSIX/SUS requirements follow. These numbers come directly
- * from SUS and have nothing to do with the host system. */
 var prefix [2200000]uint8
 
 var suffix uintptr
