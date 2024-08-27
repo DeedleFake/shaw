@@ -3,12 +3,11 @@
 package main
 
 import (
+	"math"
 	"unsafe"
 
 	"modernc.org/libc"
 )
-
-const INT_MAX = 2147483647
 
 func load_custom(tls *libc.TLS, file uintptr) {
 	bp := tls.Alloc(32)
@@ -121,7 +120,7 @@ func wordcmp(tls *libc.TLS, one uintptr, two uintptr, ic int32, len1 int32) (r i
 	var v2, v3 uintptr
 	_, _, _, _, _ = a, b, v1, v2, v3
 	if len1 == 0 {
-		len1 = int32(INT_MAX)
+		len1 = int32(math.MaxInt32)
 	}
 	ic *= int32(32) // ic = "ignore case"
 	for {
