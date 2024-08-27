@@ -54,7 +54,9 @@ func Parse(r io.Reader) (*Dict, error) {
 			continue
 		}
 
+		// TODO: Handle these.
 		fields[0] = strings.TrimSuffix(fields[0], "_")
+		fields[0] = strings.TrimSuffix(fields[0], "_VB")
 		fields[1] = strings.TrimSuffix(fields[1], ":")
 
 		var noprefix, nosuffix bool
