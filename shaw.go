@@ -3,7 +3,12 @@
 package main
 
 import (
+	"bufio"
+	"errors"
+	"fmt"
+	"io"
 	"math"
+	"os"
 	"unsafe"
 
 	"modernc.org/libc"
@@ -639,19 +644,10 @@ func shaw_print(tls *libc.TLS, cp uintptr, cap1 int32) {
 func main1(tls *libc.TLS, argc int32, argv uintptr) (r int32) {
 	bp := tls.Alloc(1152)
 	defer tls.Free(1152)
-	var c, cap1, script, sent, w, v1, v2, v7 uint8
-	var fp uintptr
-	var i, v8 int32
-	var _ /* befto at bp+1024 */ [5][2][10]int8
-	var _ /* copy at bp+256 */ [256]int8
-	var _ /* out at bp+512 */ [256]int8
-	var _ /* pword at bp+768 */ [256]int8
-	var _ /* word at bp+0 */ [256]int8
-	_, _, _, _, _, _, _, _, _, _, _ = c, cap1, fp, i, script, sent, w, v1, v2, v7, v8
-	fp = libc.Xstdin
-	w = uint8(0)
-	sent = uint8(0)
-	script = uint8(0)
+
+	var cap1, w, sent, script uint8
+	var i int32
+
 	*(*[5][2][10]int8)(unsafe.Pointer(bp + 1024)) = [5][2][10]int8{
 		0: {
 			0: {'h', 'a', 's'},
@@ -674,22 +670,29 @@ func main1(tls *libc.TLS, argc int32, argv uintptr) (r int32) {
 			1: {-16, -112, -111, -107, -16, -112, -111, -111},
 		},
 	}
-	if argc < int32(2) {
-		libc.Xfprintf(tls, libc.Xstderr, __ccgo_ts+399, libc.VaList(bp+1136, *(*uintptr)(unsafe.Pointer(argv))))
-		libc.Xexit(tls, int32(1))
+	if len(os.Args) != 2 {
+		fmt.Fprintf(os.Stderr, "Usage: %v <dictionary-file>\n", os.Args[0])
+		os.Exit(2)
 	}
 	load_custom(tls, *(*uintptr)(unsafe.Pointer(argv + 1*8)))
-	for !(libc.Xfeof(tls, fp) != 0) {
-		c = uint8(libc.Xfgetc(tls, fp))
-		if libc.BoolInt32(uint32(c)|uint32(32)-uint32('a') < uint32(26)) != 0 || w != 0 && int32(c) == int32('\'') {
-			if !(w != 0) {
-				v1 = sent
-				sent++
-				cap1 = libc.BoolUint8(v1 != 0 && libc.BoolInt32(uint32(c)-uint32('A') < uint32(26)) != 0)
+
+	in := bufio.NewReader(os.Stdin)
+	for {
+		c, err := in.ReadByte()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				return r
 			}
-			v2 = w
+			panic(err)
+		}
+
+		if uint32(c)|uint32(32)-uint32('a') < uint32(26) || w != 0 && int32(c) == int32('\'') {
+			if !(w != 0) {
+				sent++
+				cap1 = libc.BoolUint8((sent-1) != 0 && libc.BoolInt32(uint32(c)-uint32('A') < uint32(26)) != 0)
+			}
 			w++
-			(*(*[256]int8)(unsafe.Pointer(bp)))[v2] = int8(c)
+			(*(*[256]int8)(unsafe.Pointer(bp)))[w-1] = int8(c)
 			continue
 		}
 		if libc.Xstrchr(tls, __ccgo_ts+426, int32(c)) != 0 {
@@ -744,14 +747,19 @@ func main1(tls *libc.TLS, argc int32, argv uintptr) (r int32) {
 		}
 		if int32(c) == int32('<') { // pass through HTML/XML tags and Javascript
 			i = 0
-			for cond := true; cond; cond = int32(c) != int32('>') && !(libc.Xfeof(tls, fp) != 0) {
-				v7 = uint8(libc.Xfgetc(tls, fp))
-				c = v7
-				libc.Xputchar(tls, int32(v7))
+			for cond := true; cond; cond = int32(c) != int32('>') {
+				c, err := in.ReadByte()
+				if err != nil {
+					if errors.Is(err, io.EOF) {
+						return r
+					}
+					panic(err)
+				}
+
+				libc.Xputchar(tls, int32(c))
 				if i < int32(256) {
-					v8 = i
 					i++
-					(*(*[256]int8)(unsafe.Pointer(bp)))[v8] = int8(c)
+					(*(*[256]int8)(unsafe.Pointer(bp)))[i-1] = int8(c)
 				}
 			}
 			if !(libc.Xstrncasecmp(tls, bp, __ccgo_ts+439, uint64(3)) != 0) {
@@ -771,7 +779,6 @@ func main1(tls *libc.TLS, argc int32, argv uintptr) (r int32) {
 			}
 		}
 	}
-	return r
 }
 
 func main() {
