@@ -1,3 +1,5 @@
+deedles.dev/xiter v0.0.0-20240825023150-1849aa7a9329 h1:9V9hoOIF69r/I9U9jN8Ub7/9W2+KgwsguIjH42sgVwQ=
+deedles.dev/xiter v0.0.0-20240825023150-1849aa7a9329/go.mod h1:59997UHUsKAy/8bHUClTfeXdyuLZ6z/+yF++vIpxfx8=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
