@@ -2,10 +2,13 @@ package shaw
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"io"
 	"iter"
 	"os"
+	"runtime"
+	"strings"
 
 	"deedles.dev/shaw/dict"
 	"deedles.dev/xiter"
@@ -108,7 +111,7 @@ func translateRunes(r io.Reader, dict *dict.Dict) iter.Seq2[string, error] {
 	}
 }
 
-// Translate returns an iterator that translates words read from r
+// Translated returns an iterator that translates words read from r
 // using dict. It also yields intervening non-word segments in between
 // the words translated such that joining all of the yielded strings
 // in order will result in a fully translated piece of text with
@@ -116,9 +119,53 @@ func translateRunes(r io.Reader, dict *dict.Dict) iter.Seq2[string, error] {
 //
 // If at any point a non-nil error is yielded, it will be the last
 // thing yielded.
-func Translate(r io.Reader, dict *dict.Dict) iter.Seq2[string, error] {
+func Translated(r io.Reader, dict *dict.Dict) iter.Seq2[string, error] {
 	if r == os.Stdin {
 		return translateLines(r, dict)
 	}
 	return translateRunes(r, dict)
+}
+
+// TranslateString translates a string of text.
+func TranslateString(input string, dict *dict.Dict) string {
+	var buf strings.Builder
+	for word := range Translated(strings.NewReader(input), dict) {
+		buf.WriteString(word)
+	}
+	return buf.String()
+}
+
+// This might be one of the worst things that I've ever written.
+type translator struct {
+	next func() (string, error, bool)
+	buf  bytes.Buffer
+}
+
+// Translate returns an io.Reader that translates data coming from r
+// as it itself is read from.
+func Translate(r io.Reader, dict *dict.Dict) io.Reader {
+	// TODO: Reverse this. This function should be the main one and the
+	// iterator should be a convenience wrapper.
+	next, stop := iter.Pull2(Translated(r, dict))
+
+	t := translator{next: next}
+	runtime.SetFinalizer(&t, func(t *translator) { stop() })
+
+	return &t
+}
+
+func (t *translator) Read(buf []byte) (int, error) {
+	for len(buf) > t.buf.Len() {
+		text, err, ok := t.next()
+		if !ok {
+			return t.buf.Read(buf)
+		}
+		if err != nil {
+			n, _ := t.buf.Read(buf)
+			return n, err
+		}
+		t.buf.WriteString(text)
+	}
+
+	return t.buf.Read(buf)
 }
