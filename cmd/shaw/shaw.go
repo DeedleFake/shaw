@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"io"
 	"log/slog"
 	"os"
 
@@ -34,12 +34,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	for w, err := range shaw.Translated(os.Stdin, dict) {
-		if err != nil {
-			slog.Error("read input", "err", err)
-			os.Exit(1)
-		}
-
-		fmt.Print(w)
+	_, err = io.Copy(os.Stdout, shaw.Translate(os.Stdin, dict))
+	if err != nil {
+		slog.Error("read input", "err", err)
+		os.Exit(1)
 	}
 }
