@@ -34,7 +34,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	for w, err := range shaw.Translate(os.Stdin, dict) {
+	for w, err := range shaw.Translated(os.Stdin, dict) {
 		if err != nil {
 			slog.Error("read input", "err", err)
 			os.Exit(1)
