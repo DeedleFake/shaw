@@ -8,6 +8,7 @@ import (
 	"unsafe"
 
 	"deedles.dev/shaw/dict"
+	"deedles.dev/xiter"
 )
 
 // This might be one of the worst things that I've ever written.
@@ -45,7 +46,11 @@ func (t *translator) Read(buf []byte) (n int, err error) {
 func (t *translator) advance() {
 	t.buf.Reset()
 
-	next, stop := iter.Pull(bytesseq(t.r, &t.err))
+	herr := func(err error) bool {
+		t.err = err
+		return false
+	}
+	next, stop := iter.Pull(xiter.Handle(xiter.ScanBytes(t.r), herr))
 	defer stop()
 
 	c, ok := next()
@@ -84,20 +89,4 @@ func (t *translator) translate(translatable bool) {
 // translatable word.
 func isTranslatable(r byte) bool {
 	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || r == '\''
-}
-
-func bytesseq(r io.ByteScanner, perr *error) iter.Seq[byte] {
-	return func(yield func(byte) bool) {
-		for {
-			c, err := r.ReadByte()
-			if err != nil {
-				*perr = err
-				return
-			}
-			if !yield(c) {
-				r.UnreadByte()
-				return
-			}
-		}
-	}
 }
