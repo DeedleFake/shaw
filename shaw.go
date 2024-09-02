@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"iter"
 	"unsafe"
 
 	"deedles.dev/shaw/dict"
-	"deedles.dev/xiter"
 )
 
 // This might be one of the worst things that I've ever written.
@@ -46,15 +44,9 @@ func (t *translator) Read(buf []byte) (n int, err error) {
 func (t *translator) advance() {
 	t.buf.Reset()
 
-	herr := func(err error) bool {
+	c, err := t.r.ReadByte()
+	if err != nil {
 		t.err = err
-		return false
-	}
-	next, stop := iter.Pull(xiter.Handle(xiter.ScanBytes(t.r), herr))
-	defer stop()
-
-	c, ok := next()
-	if !ok {
 		return
 	}
 	t.buf.WriteByte(c)
@@ -63,8 +55,9 @@ func (t *translator) advance() {
 	defer t.translate(translatable)
 
 	for {
-		c, ok := next()
-		if !ok {
+		c, err := t.r.ReadByte()
+		if err != nil {
+			t.err = err
 			return
 		}
 		if isTranslatable(c) != translatable {
