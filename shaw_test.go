@@ -20,3 +20,10 @@ func TestTranslate(t *testing.T) {
 		t.Fatalf("%q", after)
 	}
 }
+
+func BenchmarkTranslate(b *testing.B) {
+	for range b.N {
+		r := shaw.Translate(strings.NewReader("This is a test."), dicts.American())
+		io.Copy(io.Discard, r)
+	}
+}
